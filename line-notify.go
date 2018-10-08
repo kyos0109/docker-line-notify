@@ -21,7 +21,7 @@ type LineInfo struct {
 
 func main() {
 	info := LineInfo{
-			Token:   os.Getenv("PLUGIN_TOKEN"),
+			Token:   getToken("PLUGIN_TOKEN", "token_secret"),
 			Message: os.Getenv("PLUGIN_MESSAGE"),
 			Debug:   getBoolEnv("PLUGIN_DEBUG"),
 		}
@@ -29,6 +29,15 @@ func main() {
 	if err := send(info) ; err != nil {
 		fmt.Println(err.Error())
 	}
+}
+
+func getToken(key ...string) string {
+	for _, item := range key {
+		if v, ok := os.LookupEnv(item); ok {
+			return v
+		}
+	}
+	return ""
 }
 
 func getBoolEnv(key string) bool {
