@@ -1,14 +1,15 @@
 package main
 
 import (
+	"bytes"
+	"errors"
 	"log"
-	"os"
 	"net/http"
 	"net/url"
-	"strings"
+	"os"
 	"strconv"
-	"errors"
-	"fmt"
+	"strings"
+	"text/template"
 )
 
 const lineNotifyURL = "https://notify-api.line.me/api/notify"
@@ -19,16 +20,62 @@ type LineInfo struct {
 	Debug   bool
 }
 
+type ProjectStatus struct {
+	BuildStatus string
+	RepoName	string
+	RepoBranch  string
+	BuildNum    string
+	CommitID    string
+	Author      string
+	CommitMsg   string
+}
+
 func main() {
+
+	for _, pair := range os.Environ() {
+		log.Println(pair)
+	}
+
 	info := LineInfo{
-			Token:   getToken("PLUGIN_TOKEN", "token_secret"),
-			Message: os.Getenv("PLUGIN_MESSAGE"),
-			Debug:   getBoolEnv("PLUGIN_DEBUG"),
+		Token:   getToken("PLUGIN_TOKEN", "token_secret"),
+		Message: getMessage("PLUGIN_MESSAGE"),
+		Debug:   getBoolEnv("PLUGIN_DEBUG"),
+	}
+
+	if err := send(info); err != nil {
+		log.Fatal(err.Error())
+	}
+}
+
+func getMessage(msg string) string {
+
+	repo := ProjectStatus{
+		BuildStatus: os.Getenv("CI_BUILD_STATUS"),
+		RepoName:    os.Getenv("CI_REPO_NAME"),
+		RepoBranch:  os.Getenv("DRONE_COMMIT_BRANCH"),
+		BuildNum:    os.Getenv("DRONE_BUILD_NUMBER"),
+		CommitID:    os.Getenv("DRONE_COMMIT_SHA"),
+		Author:      os.Getenv("DRONE_COMMIT_AUTHOR"),
+		CommitMsg:   os.Getenv("DRONE_COMMIT_MESSAGE"),
+	}
+
+	if v, ok := os.LookupEnv(msg); ok {
+		t := template.New("drone message")
+		t, err := t.Parse(v)
+
+		if err != nil {
+			log.Fatal("Parse:", err)
+			return ""
 		}
 
-	if err := send(info) ; err != nil {
-		fmt.Println(err.Error())
+		var tpl bytes.Buffer
+		if err := t.Execute(&tpl, repo); err != nil {
+			log.Fatal("Execute:", err)
+			return ""
+		}
+		return tpl.String()
 	}
+	return ""
 }
 
 func getToken(key ...string) string {
@@ -41,12 +88,12 @@ func getToken(key ...string) string {
 }
 
 func getBoolEnv(key string) bool {
-    if v, ok := os.LookupEnv(key); ok {
-    	if strings.ToLower(v) == "true" {
-        	return true
-    	}
-    }
-    return false
+	if v, ok := os.LookupEnv(key); ok {
+		if strings.ToLower(v) == "true" {
+			return true
+		}
+	}
+	return false
 }
 
 func send(l LineInfo) error {
@@ -68,7 +115,7 @@ func send(l LineInfo) error {
 		return errors.New("error request : " + err.Error())
 	}
 
-	req.Header.Add("Authorization", "Bearer " + l.Token)
+	req.Header.Add("Authorization", "Bearer "+l.Token)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Add("Content-Length", strconv.Itoa(len(data.Encode())))
 
