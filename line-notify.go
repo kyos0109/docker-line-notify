@@ -32,10 +32,6 @@ type ProjectStatus struct {
 
 func main() {
 
-	for _, pair := range os.Environ() {
-		log.Println(pair)
-	}
-
 	info := LineInfo{
 		Token:   getToken("PLUGIN_TOKEN", "TOKEN_SECRET"),
 		Message: getMessage("PLUGIN_MESSAGE"),
