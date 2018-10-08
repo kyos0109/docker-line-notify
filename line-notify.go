@@ -37,7 +37,7 @@ func main() {
 	}
 
 	info := LineInfo{
-		Token:   getToken("PLUGIN_TOKEN", "token_secret"),
+		Token:   getToken("PLUGIN_TOKEN", "TOKEN_SECRET"),
 		Message: getMessage("PLUGIN_MESSAGE"),
 		Debug:   getBoolEnv("PLUGIN_DEBUG"),
 	}
