@@ -3,7 +3,7 @@
 ```
 docker run -e PLUGIN_TOKEN=${token} -e PLUGIN_MESSAGE="Test" --rm kyos0109/drone-line-notify
 ```
-or in .drone.yml
+# or in .drone.yml
 ```
   notify:
     image: kyos0109/drone-line-notify:latest
