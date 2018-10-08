@@ -8,7 +8,7 @@ import (
 const plugin_debug_key string = "PLUGIN_DEBUG"
 const plugin_message_key string = "PLUGIN_MESSAGE"
 const plugin_token_key string = "PLUGIN_TOKEN"
-const token_secret_key string = "token_secret"
+const token_secret_key string = "TOKEN_SECRET"
 
 func TestSetDebugEnv(t *testing.T) {
 	os.Setenv(plugin_debug_key, "true")
