@@ -22,7 +22,7 @@ type LineInfo struct {
 
 type ProjectStatus struct {
 	BuildStatus string
-	RepoName	string
+	RepoName    string
 	RepoBranch  string
 	BuildNum    string
 	CommitID    string
