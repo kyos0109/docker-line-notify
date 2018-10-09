@@ -28,6 +28,7 @@ type ProjectStatus struct {
 	CommitID    string
 	Author      string
 	CommitMsg   string
+	ResultLink  string
 }
 
 func main() {
@@ -53,6 +54,7 @@ func getMessage(msg string) string {
 		CommitID:    os.Getenv("DRONE_COMMIT_SHA"),
 		Author:      os.Getenv("DRONE_COMMIT_AUTHOR"),
 		CommitMsg:   os.Getenv("DRONE_COMMIT_MESSAGE"),
+		ResultLink:  os.Getenv("DRONE_BUILD_LINK"),
 	}
 
 	if v, ok := os.LookupEnv(msg); ok {
