@@ -16,6 +16,7 @@ docker run -e PLUGIN_TOKEN=${token} -e PLUGIN_MESSAGE="Test" --rm kyos0109/drone
         Commit ID: {{.CommitID}}
         Author: {{.Author}}
         Commit Msg: {{.CommitMsg}}
+        Link: {{.ResultLink}}
     when:
       status: [ success, failure ]
 ```
